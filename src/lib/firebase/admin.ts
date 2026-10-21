@@ -1,4 +1,7 @@
 import * as admin from 'firebase-admin';
+import { App, cert, getApps, initializeApp } from 'firebase-admin/app';
+import { getFirestore, Firestore } from 'firebase-admin/firestore';
+import { getAuth, Auth } from 'firebase-admin/auth';
 import path from 'path';
 import fs from 'fs';
 
@@ -20,10 +23,12 @@ if (fs.existsSync(serviceAccountPath)) {
   }
 }
 
-if (!admin.apps.length && serviceAccount && serviceAccount.private_key && !serviceAccount.private_key.includes('YOUR_PRIVATE_KEY')) {
+let firebaseApp: App | null = getApps()[0] ?? null;
+
+if (!firebaseApp && serviceAccount && serviceAccount.private_key && !serviceAccount.private_key.includes('YOUR_PRIVATE_KEY')) {
   try {
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
+    firebaseApp = initializeApp({
+      credential: cert(serviceAccount),
       projectId: serviceAccount.project_id || 'student-marketplace-badb0',
     });
   } catch (error) {
@@ -31,6 +36,6 @@ if (!admin.apps.length && serviceAccount && serviceAccount.private_key && !servi
   }
 }
 
-export const db: admin.firestore.Firestore = (admin.apps.length ? admin.firestore() : null) as any;
-export const auth: admin.auth.Auth = (admin.apps.length ? admin.auth() : null) as any;
+export const db: Firestore | null = firebaseApp ? getFirestore(firebaseApp) : null;
+export const auth: Auth | null = firebaseApp ? getAuth(firebaseApp) : null;
 export default admin;
