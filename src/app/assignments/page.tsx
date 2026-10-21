@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { useApp } from '@/context/AppContext';
+import { useApp } from '../../context/AppContext';
 import {
   Plus,
   Search,
@@ -16,7 +16,7 @@ import {
   List,
   Sparkles
 } from 'lucide-react';
-import { Modal } from '@/components/common/Modal';
+import { Modal } from '../../components/common/Modal';
 import { Priority, AssignmentStatus, Assignment } from '@/types';
 
 export default function AssignmentsPage() {
