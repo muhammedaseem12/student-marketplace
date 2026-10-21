@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useApp } from '@/context/AppContext';
+import { useApp } from '../../context/AppContext';
 import {
   UserCheck,
   Plus,
@@ -16,7 +16,7 @@ import {
   Sparkles,
   HelpCircle
 } from 'lucide-react';
-import { Modal } from '@/components/common/Modal';
+import { Modal } from '../../components/common/Modal';
 import { SubjectAttendance } from '@/types';
 
 export default function AttendancePage() {
