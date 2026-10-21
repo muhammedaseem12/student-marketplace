@@ -36,6 +36,6 @@ if (!firebaseApp && serviceAccount && serviceAccount.private_key && !serviceAcco
   }
 }
 
-export const db: Firestore | null = firebaseApp ? getFirestore(firebaseApp) : null;
-export const auth: Auth | null = firebaseApp ? getAuth(firebaseApp) : null;
+export const db: Firestore = (firebaseApp ? getFirestore(firebaseApp) : null) as any;
+export const auth: Auth = (firebaseApp ? getAuth(firebaseApp) : null) as any;
 export default admin;
