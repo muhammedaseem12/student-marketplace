@@ -97,14 +97,21 @@ export default function MarketplacePage() {
         const filePath = (profile.id || 'student') + '/' + Date.now() + '.' + extension;
         const { error: uploadError } = await supabase.storage.from('marketplace-images').upload(filePath, productImage, { upsert: false, contentType: productImage.type });
         if (uploadError) {
-          showToast('Image upload failed. Create a public Supabase Storage bucket named marketplace-images, then try again.');
+          showToast('Photo upload failed: ' + uploadError.message + '. Check the marketplace-images bucket and upload policy in Supabase Storage.');
           return;
         }
         const { data } = supabase.storage.from('marketplace-images').getPublicUrl(filePath);
         finalImageUrl = data.publicUrl;
       }
-      await addListing({ title: title.trim(), description: description.trim(), price: Number(price), category, condition, status: 'Available', imageUrl: finalImageUrl, sellerContact: contact, location: location.trim() });
-      setTitle(''); setDescription(''); setPrice(''); setImageUrl(''); setProductImage(null); setImagePreview(''); setIsCreateOpen(false);
+      const created = await addListing({ title: title.trim(), description: description.trim(), price: Number(price), category, condition, status: 'Available', imageUrl: finalImageUrl, sellerContact: contact, location: location.trim() });
+      if (!created) return;
+      setTitle('');
+      setDescription('');
+      setPrice('');
+      setImageUrl('');
+      setProductImage(null);
+      setImagePreview('');
+      setIsCreateOpen(false);
     } catch {
       showToast('Could not create listing. Please try again.');
     } finally {
