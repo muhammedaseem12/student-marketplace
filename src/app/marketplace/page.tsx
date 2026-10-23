@@ -95,8 +95,15 @@ export default function MarketplacePage() {
     try {
       let finalImageUrl = imageUrl.trim();
       if (productImage) {
+        const { data: authData, error: authError } = await supabase.auth.getUser();
+        if (authError || !authData.user) {
+          const message = 'Your session has expired. Sign in again before posting a listing.';
+          setListingError(message);
+          showToast(message);
+          return;
+        }
         const extension = productImage.name.split('.').pop()?.toLowerCase() || 'jpg';
-        const filePath = (profile.id || 'student') + '/' + Date.now() + '.' + extension;
+        const filePath = authData.user.id + '/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '.' + extension;
         const { error: uploadError } = await supabase.storage.from('marketplace-images').upload(filePath, productImage, { upsert: false, contentType: productImage.type });
         if (uploadError) {
           const message = 'Photo upload failed: ' + uploadError.message + '. Check the marketplace-images bucket and upload policy in Supabase Storage.';
