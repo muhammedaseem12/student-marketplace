@@ -64,6 +64,7 @@ export default function MarketplacePage() {
   const [productImage, setProductImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState('');
   const [isSubmittingListing, setIsSubmittingListing] = useState(false);
+  const [listingError, setListingError] = useState('');
   const [location, setLocation] = useState('');
   const [contact, setContact] = useState(profile.email);
 
@@ -90,6 +91,7 @@ export default function MarketplacePage() {
     e.preventDefault();
     if (!title.trim() || !price.trim() || !Number.isFinite(Number(price)) || Number(price) <= 0) return;
     setIsSubmittingListing(true);
+    setListingError('');
     try {
       let finalImageUrl = imageUrl.trim();
       if (productImage) {
@@ -97,23 +99,31 @@ export default function MarketplacePage() {
         const filePath = (profile.id || 'student') + '/' + Date.now() + '.' + extension;
         const { error: uploadError } = await supabase.storage.from('marketplace-images').upload(filePath, productImage, { upsert: false, contentType: productImage.type });
         if (uploadError) {
-          showToast('Photo upload failed: ' + uploadError.message + '. Check the marketplace-images bucket and upload policy in Supabase Storage.');
+          const message = 'Photo upload failed: ' + uploadError.message + '. Check the marketplace-images bucket and upload policy in Supabase Storage.';
+          setListingError(message);
+          showToast(message);
           return;
         }
         const { data } = supabase.storage.from('marketplace-images').getPublicUrl(filePath);
         finalImageUrl = data.publicUrl;
       }
       const created = await addListing({ title: title.trim(), description: description.trim(), price: Number(price), category, condition, status: 'Available', imageUrl: finalImageUrl, sellerContact: contact, location: location.trim() });
-      if (!created) return;
+      if (!created) {
+        setListingError('Listing was not saved. Check that you are signed in and your Supabase marketplace_listings table allows authenticated students to insert listings.');
+        return;
+      }
       setTitle('');
       setDescription('');
       setPrice('');
       setImageUrl('');
       setProductImage(null);
       setImagePreview('');
+      setListingError('');
       setIsCreateOpen(false);
-    } catch {
-      showToast('Could not create listing. Please try again.');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      setListingError('Could not create listing: ' + message);
+      showToast('Could not create listing: ' + message);
     } finally {
       setIsSubmittingListing(false);
     }
@@ -355,6 +365,7 @@ export default function MarketplacePage() {
         title="Create Student Listing"
       >
         <form onSubmit={handleCreateSubmit} className="space-y-4 text-xs">
+          {listingError && <div role="alert" className="rounded-xl border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">{listingError}</div>}
           <div>
             <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
               Title *
