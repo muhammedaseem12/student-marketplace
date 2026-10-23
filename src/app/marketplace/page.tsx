@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import {
   ShoppingBag,
@@ -66,7 +66,8 @@ export default function MarketplacePage() {
   const [imagePreview, setImagePreview] = useState('');
   const [isSubmittingListing, setIsSubmittingListing] = useState(false);
   const [listingError, setListingError] = useState('');
-  const [fullImage, setFullImage] = useState<{ url: string; title: string } | null>(null);
+  const [fullImage, setFullImage] = useState<MarketplaceListing | null>(null);
+  const [incomingMessages, setIncomingMessages] = useState<Array<{id:string; listing_id:string; sender_id:string; body:string; created_at:string; read_at:string | null}>>([]);
   const [location, setLocation] = useState('');
   const [contact, setContact] = useState(profile.email);
 
@@ -138,9 +139,47 @@ export default function MarketplacePage() {
     }
   };
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  useEffect(() => {
+    let active = true;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+    const setup = async () => {
+      const { data } = await supabase.auth.getUser();
+      const user = data.user;
+      if (!user || !active) return;
+      const load = async () => {
+        const { data: rows, error } = await supabase.from('marketplace_messages')
+          .select('id, listing_id, sender_id, body, created_at, read_at')
+          .eq('receiver_id', user.id).order('created_at', { ascending: false }).limit(30);
+        if (!error && rows && active) setIncomingMessages(rows as typeof incomingMessages);
+      };
+      await load();
+      channel = supabase.channel('marketplace-inbox-' + user.id)
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'marketplace_messages', filter: 'receiver_id=eq.' + user.id }, (payload) => {
+          const message = payload.new as typeof incomingMessages[number];
+          if (!active) return;
+          setIncomingMessages(prev => [message, ...prev.filter(m => m.id !== message.id)].slice(0, 30));
+          showToast('New buyer message received!');
+        }).subscribe();
+    };
+    void setup();
+    return () => { active = false; if (channel) void supabase.removeChannel(channel); };
+  }, []);
+
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    showToast(`Message sent to seller (${contactingItem?.sellerName})!`);
+    if (!contactingItem || !customMsg.trim()) return;
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+    const user = authData.user;
+    if (authError || !user) { showToast('Please sign in to message the seller.'); return; }
+    if (!contactingItem.sellerId || contactingItem.sellerId === user.id) {
+      showToast('This listing has no seller account attached, or you own this listing.'); return;
+    }
+    const { error } = await supabase.from('marketplace_messages').insert({
+      listing_id: contactingItem.id, sender_id: user.id,
+      receiver_id: contactingItem.sellerId, body: customMsg.trim(),
+    });
+    if (error) { showToast('Message not sent: ' + error.message + '. Run the marketplace messaging SQL setup.'); return; }
+    showToast('Message delivered to ' + contactingItem.sellerName + '.');
     setContactingItem(null);
     setCustomMsg('');
   };
@@ -260,7 +299,7 @@ export default function MarketplacePage() {
               <div>
                 <div className="relative h-48 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
                   {item.imageUrl ? (
-                    <button type="button" onClick={() => setFullImage({ url: item.imageUrl, title: item.title })} className="block h-full w-full cursor-zoom-in" aria-label={`View full image of ${item.title}`}><img src={item.imageUrl} alt={item.title} className="w-full h-full object-contain p-2 transition-transform duration-300" /></button>
+                    <button type="button" onClick={() => setFullImage(item)} className="block h-full w-full cursor-zoom-in" aria-label={`View full image of ${item.title}`}><img src={item.imageUrl} alt={item.title} className="w-full h-full object-contain p-2 transition-transform duration-300" /></button>
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-slate-400" aria-label="No product photo provided">
                       <ShoppingBag className="w-10 h-10" />
@@ -365,6 +404,20 @@ export default function MarketplacePage() {
             </div>
           ))}
         </div>
+      )}
+
+      {incomingMessages.length > 0 && (
+        <section className="rounded-2xl border border-purple-200 bg-white p-4 shadow-sm dark:border-purple-900 dark:bg-slate-900">
+          <h3 className="mb-3 font-extrabold text-slate-900 dark:text-white">Buyer messages ({incomingMessages.length})</h3>
+          <div className="space-y-3">{incomingMessages.map(message => {
+            const listing = listings.find(item => item.id === message.listing_id);
+            return <div key={message.id} className="rounded-xl border border-slate-200 p-3 dark:border-slate-700">
+              <p className="text-xs font-semibold text-purple-700 dark:text-purple-300">{listing?.title || 'Marketplace item'} · {new Date(message.created_at).toLocaleString()}</p>
+              <p className="mt-1 whitespace-pre-wrap text-sm">{message.body}</p>
+              <p className="mt-2 break-all text-[11px] text-slate-500">Buyer account: {message.sender_id}</p>
+            </div>;
+          })}</div>
+        </section>
       )}
 
       {/* Create Listing Modal */}
@@ -498,13 +551,19 @@ export default function MarketplacePage() {
 
       {fullImage && (
         <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/90 p-3 sm:p-6" role="dialog" aria-modal="true" aria-label={fullImage.title} onClick={() => setFullImage(null)}>
-          <button type="button" aria-label="Close full image" onClick={() => setFullImage(null)} className="absolute right-4 top-4 z-10 rounded-full bg-white/15 p-2 text-white hover:bg-white/25">
-            <X className="h-6 w-6" />
-          </button>
-          <div className="flex h-full w-full items-center justify-center" onClick={(event) => event.stopPropagation()}>
-            <img src={fullImage.url} alt={fullImage.title} className="max-h-[90dvh] max-w-full object-contain" />
+          <button type="button" aria-label="Close product details" onClick={() => setFullImage(null)} className="absolute right-4 top-4 z-10 rounded-full bg-white/15 p-2 text-white"><X className="h-6 w-6" /></button>
+          <div className="flex max-h-[92dvh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl bg-white text-slate-900 shadow-2xl dark:bg-slate-900 dark:text-white" onClick={(event) => event.stopPropagation()}>
+            <div className="flex min-h-0 flex-1 items-center justify-center bg-black/5 p-3 dark:bg-black/30">
+              {fullImage.imageUrl ? <img src={fullImage.imageUrl} alt={fullImage.title} className="max-h-[55dvh] max-w-full object-contain" /> : <ShoppingBag className="h-16 w-16 text-slate-400" />}
+            </div>
+            <div className="space-y-2 overflow-y-auto p-4">
+              <div className="flex items-start justify-between gap-3"><h2 className="text-lg font-extrabold">{fullImage.title}</h2><span className="shrink-0 rounded-full bg-primary px-3 py-1 font-bold text-white">{formatINR(fullImage.price)}</span></div>
+              <p className="text-sm text-slate-500 dark:text-slate-300">{fullImage.category} · {fullImage.condition} · {fullImage.location || 'Campus pickup'}</p>
+              <p className="whitespace-pre-wrap text-sm">{fullImage.description || 'No description provided.'}</p>
+              <p className="text-xs text-slate-500">Seller: {fullImage.sellerName}</p>
+              {!fullImage.isOwner && fullImage.status === 'Available' && <button type="button" onClick={() => { setContactingItem(fullImage); setCustomMsg('Hi ' + fullImage.sellerName + '! I am interested in "' + fullImage.title + '" listed for ' + formatINR(fullImage.price) + '. Is it still available?'); setFullImage(null); }} className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 font-bold text-white hover:bg-primary-dark"><MessageSquare className="h-4 w-4" /> Contact Seller</button>}
+            </div>
           </div>
-          <p className="absolute bottom-4 left-4 right-4 text-center text-sm font-medium text-white">{fullImage.title}</p>
         </div>
       )}
 
