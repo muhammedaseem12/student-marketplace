@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { Modal } from '@/components/common/Modal';
 import { MarketplaceCategory, ItemCondition, MarketplaceListing } from '@/types';
+import { supabase } from '@/lib/supabase/client';
 
 const formatINR = (amount: number) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 2 }).format(amount);
 
@@ -60,6 +61,9 @@ export default function MarketplacePage() {
   const [category, setCategory] = useState<MarketplaceCategory>('Books');
   const [condition, setCondition] = useState<ItemCondition>('Like New');
   const [imageUrl, setImageUrl] = useState('');
+  const [productImage, setProductImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState('');
+  const [isSubmittingListing, setIsSubmittingListing] = useState(false);
   const [location, setLocation] = useState('');
   const [contact, setContact] = useState(profile.email);
 
@@ -82,26 +86,30 @@ export default function MarketplacePage() {
     });
   }, [listings, searchQuery, selectedCategory, selectedCondition]);
 
-  const handleCreateSubmit = (e: React.FormEvent) => {
+  const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !price.trim() || !Number.isFinite(Number(price)) || Number(price) <= 0) return;
-
-    addListing({
-      title,
-      description: description.trim(),
-      price: Number(price),
-      category,
-      condition,
-      status: 'Available',
-      imageUrl: imageUrl.trim(),
-      sellerContact: contact,
-      location,
-    });
-
-    setTitle('');
-    setDescription('');
-    setPrice('');
-    setIsCreateOpen(false);
+    setIsSubmittingListing(true);
+    try {
+      let finalImageUrl = imageUrl.trim();
+      if (productImage) {
+        const extension = productImage.name.split('.').pop()?.toLowerCase() || 'jpg';
+        const filePath = (profile.id || 'student') + '/' + Date.now() + '.' + extension;
+        const { error: uploadError } = await supabase.storage.from('marketplace-images').upload(filePath, productImage, { upsert: false, contentType: productImage.type });
+        if (uploadError) {
+          showToast('Image upload failed. Create a public Supabase Storage bucket named marketplace-images, then try again.');
+          return;
+        }
+        const { data } = supabase.storage.from('marketplace-images').getPublicUrl(filePath);
+        finalImageUrl = data.publicUrl;
+      }
+      await addListing({ title: title.trim(), description: description.trim(), price: Number(price), category, condition, status: 'Available', imageUrl: finalImageUrl, sellerContact: contact, location: location.trim() });
+      setTitle(''); setDescription(''); setPrice(''); setImageUrl(''); setProductImage(null); setImagePreview(''); setIsCreateOpen(false);
+    } catch {
+      showToast('Could not create listing. Please try again.');
+    } finally {
+      setIsSubmittingListing(false);
+    }
   };
 
   const handleSendMessage = (e: React.FormEvent) => {
@@ -415,16 +423,18 @@ export default function MarketplacePage() {
           </div>
 
           <div>
-            <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-              Image URL
+            <label className="block font-bold text-slate-700 dark:text-slate-300 mb-2">Product photo</label>
+            <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-purple-300 dark:border-purple-800 bg-purple-50/60 dark:bg-purple-950/20 px-4 py-5 text-center">
+              {imagePreview ? <img src={imagePreview} alt="Product photo preview" className="h-36 w-full rounded-lg object-contain" /> : <><ShoppingBag className="h-8 w-8 text-purple-500" /><span className="text-xs font-bold text-slate-700 dark:text-slate-200">Tap to choose a product picture</span><span className="text-[11px] text-slate-500">JPG, PNG or WebP · up to 5 MB</span></>}
+              <input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(e) => {
+                const file = e.target.files?.[0]; if (!file) return;
+                if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) { showToast("Choose a JPG, PNG, or WebP image."); e.currentTarget.value = ""; return; }
+                if (file.size > 5 * 1024 * 1024) { showToast("Image must be 5 MB or smaller."); e.currentTarget.value = ""; return; }
+                setProductImage(file); setImagePreview(URL.createObjectURL(file)); setImageUrl("");
+              }} />
             </label>
-            <input
-              type="text"
-              placeholder="Paste a real photo URL (optional)"
-              value={imageUrl}
-              onChange={(e) => setImageUrl(e.target.value)}
-              className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white"
-            />
+            {productImage && <button type="button" onClick={() => { setProductImage(null); setImagePreview(""); }} className="mt-2 text-xs font-semibold text-rose-600 hover:underline">Remove selected photo</button>}
+            <details className="mt-3"><summary className="cursor-pointer text-xs font-semibold text-slate-500">Or use an image URL</summary><input type="url" placeholder="https://example.com/product.jpg" value={imageUrl} onChange={(e) => { setImageUrl(e.target.value); setProductImage(null); setImagePreview(""); }} className="mt-2 w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white" /></details>
           </div>
 
           <div>
@@ -450,9 +460,10 @@ export default function MarketplacePage() {
             </button>
             <button
               type="submit"
-              className="px-5 py-2 bg-primary text-white font-bold rounded-xl hover:bg-primary-dark"
+              disabled={isSubmittingListing}
+              className="px-5 py-2 bg-primary text-white font-bold rounded-xl hover:bg-primary-dark disabled:opacity-60"
             >
-              Post Item
+              {isSubmittingListing ? "Uploading..." : "Post Item"}
             </button>
           </div>
         </form>
