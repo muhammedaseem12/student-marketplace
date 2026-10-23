@@ -206,11 +206,13 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuickAdd }) => {
 
         {/* Profile Link */}
         <Link href="/profile" className="flex items-center gap-2">
-          <img
-            src={profile.avatar}
-            alt={profile.name}
-            className="w-8 h-8 rounded-full object-cover border border-purple-300 dark:border-purple-700"
-          />
+          <div
+            aria-label={`Avatar for ${profile.name || 'student'}`}
+            title={profile.name || 'Student'}
+            className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-700 flex items-center justify-center text-xs font-extrabold"
+          >
+            {(profile.name || 'S').trim().split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]).join('').toUpperCase() || 'S'}
+          </div>
         </Link>
       </div>
     </header>
