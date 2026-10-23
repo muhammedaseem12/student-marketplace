@@ -70,7 +70,7 @@ interface AppContextType {
 
   // Marketplace
   listings: MarketplaceListing[];
-  addListing: (item: Omit<MarketplaceListing, 'id' | 'postedDate' | 'sellerName' | 'sellerAvatar' | 'isOwner'>) => Promise<void>;
+  addListing: (item: Omit<MarketplaceListing, 'id' | 'postedDate' | 'sellerName' | 'sellerAvatar' | 'isOwner'>) => Promise<boolean>;
   updateListingStatus: (id: string, status: MarketplaceListing['status']) => Promise<void>;
   deleteListing: (id: string) => Promise<void>;
 
@@ -783,12 +783,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   // Marketplace Handlers with Cloud Firestore
-  const addListing = async (item: Omit<MarketplaceListing, 'id' | 'postedDate' | 'sellerName' | 'sellerAvatar' | 'isOwner'>) => {
+  const addListing = async (item: Omit<MarketplaceListing, 'id' | 'postedDate' | 'sellerName' | 'sellerAvatar' | 'isOwner'>): Promise<boolean> => {
     const { data: authData, error: authError } = await supabase.auth.getUser();
     const user = authData.user;
     if (authError || !user) {
       showToast('Please sign in before creating a listing.');
-      return;
+      return false;
     }
     const payload = {
       seller_id: user.id,
@@ -807,7 +807,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const { data, error } = await supabase.from('marketplace_listings').insert(payload).select().single();
     if (error || !data) {
       showToast(error?.message || 'Could not create listing.');
-      return;
+      return false;
     }
     const newListing: MarketplaceListing = {
       ...item,
@@ -819,6 +819,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
     setListings(prev => [newListing, ...prev]);
     showToast(`Marketplace item "${item.title}" listed successfully.`);
+    return true;
   };
 
   const updateListingStatus = async (id: string, status: MarketplaceListing['status']) => {
