@@ -210,6 +210,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           postedDate: new Date(row.created_at).toLocaleDateString(),
           sellerName: row.seller_name || 'Student seller',
           sellerAvatar: row.seller_avatar || '',
+          sellerId: row.seller_id,
           sellerContact: row.seller_contact || '',
           location: row.location || '',
           isOwner: row.seller_id === user?.id,
@@ -292,6 +293,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         postedDate: new Date(row.created_at).toLocaleDateString(),
         sellerName: row.seller_name || 'Student seller',
         sellerAvatar: row.seller_avatar || '',
+        sellerId: row.seller_id,
         sellerContact: row.seller_contact || '',
         location: row.location || '',
         isOwner: row.seller_id === user?.id,
@@ -815,6 +817,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       postedDate: 'Just now',
       sellerName: data.seller_name || profile.name,
       sellerAvatar: data.seller_avatar || profile.avatar,
+      sellerId: user.id,
       isOwner: true,
     };
     setListings(prev => [newListing, ...prev]);
