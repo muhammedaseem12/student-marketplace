@@ -18,7 +18,8 @@ import {
   Laptop,
   PenTool,
   FlaskConical,
-  Home
+  Home,
+  X
 } from 'lucide-react';
 import { Modal } from '@/components/common/Modal';
 import { MarketplaceCategory, ItemCondition, MarketplaceListing } from '@/types';
@@ -65,6 +66,7 @@ export default function MarketplacePage() {
   const [imagePreview, setImagePreview] = useState('');
   const [isSubmittingListing, setIsSubmittingListing] = useState(false);
   const [listingError, setListingError] = useState('');
+  const [fullImage, setFullImage] = useState<{ url: string; title: string } | null>(null);
   const [location, setLocation] = useState('');
   const [contact, setContact] = useState(profile.email);
 
@@ -258,7 +260,7 @@ export default function MarketplacePage() {
               <div>
                 <div className="relative h-48 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
                   {item.imageUrl ? (
-                    <img src={item.imageUrl} alt={item.title} className="w-full h-full object-contain p-2 transition-transform duration-300" />
+                    <button type="button" onClick={() => setFullImage({ url: item.imageUrl, title: item.title })} className="block h-full w-full cursor-zoom-in" aria-label={`View full image of ${item.title}`}><img src={item.imageUrl} alt={item.title} className="w-full h-full object-contain p-2 transition-transform duration-300" /></button>
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-slate-400" aria-label="No product photo provided">
                       <ShoppingBag className="w-10 h-10" />
@@ -493,6 +495,18 @@ export default function MarketplacePage() {
           </div>
         </form>
       </Modal>
+
+      {fullImage && (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/90 p-3 sm:p-6" role="dialog" aria-modal="true" aria-label={fullImage.title} onClick={() => setFullImage(null)}>
+          <button type="button" aria-label="Close full image" onClick={() => setFullImage(null)} className="absolute right-4 top-4 z-10 rounded-full bg-white/15 p-2 text-white hover:bg-white/25">
+            <X className="h-6 w-6" />
+          </button>
+          <div className="flex h-full w-full items-center justify-center" onClick={(event) => event.stopPropagation()}>
+            <img src={fullImage.url} alt={fullImage.title} className="max-h-[90dvh] max-w-full object-contain" />
+          </div>
+          <p className="absolute bottom-4 left-4 right-4 text-center text-sm font-medium text-white">{fullImage.title}</p>
+        </div>
+      )}
 
       {/* Contact Seller Modal */}
       <Modal
