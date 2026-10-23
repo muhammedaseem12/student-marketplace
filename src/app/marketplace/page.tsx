@@ -53,6 +53,7 @@ export default function MarketplacePage() {
   // Contact modal state
   const [contactingItem, setContactingItem] = useState<MarketplaceListing | null>(null);
   const [customMsg, setCustomMsg] = useState('');
+  const [messageRecipientId, setMessageRecipientId] = useState('');
 
   // Create modal state
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -171,17 +172,18 @@ export default function MarketplacePage() {
     const { data: authData, error: authError } = await supabase.auth.getUser();
     const user = authData.user;
     if (authError || !user) { showToast('Please sign in to message the seller.'); return; }
-    if (!contactingItem.sellerId || contactingItem.sellerId === user.id) {
-      showToast('This listing has no seller account attached, or you own this listing.'); return;
+    if (!messageRecipientId || messageRecipientId === user.id) {
+      showToast('Unable to identify the other person in this conversation.'); return;
     }
     const { error } = await supabase.from('marketplace_messages').insert({
       listing_id: contactingItem.id, sender_id: user.id,
-      receiver_id: contactingItem.sellerId, body: customMsg.trim(),
+      receiver_id: messageRecipientId, body: customMsg.trim(),
     });
     if (error) { showToast('Message not sent: ' + error.message + '. Run the marketplace messaging SQL setup.'); return; }
     showToast('Message delivered to ' + contactingItem.sellerName + '.');
     setContactingItem(null);
     setCustomMsg('');
+    setMessageRecipientId('');
   };
 
   const handleReportSubmit = (e: React.FormEvent) => {
@@ -391,6 +393,7 @@ export default function MarketplacePage() {
                     <button
                       onClick={() => {
                         setContactingItem(item);
+                        setMessageRecipientId(item.sellerId || '');
                         setCustomMsg(`Hi ${item.sellerName}! I saw your "${item.title}" listed for ${formatINR(item.price)}. Is it still available?`);
                       }}
                       className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white rounded-xl text-xs font-bold hover:bg-primary-dark transition-colors"
@@ -415,6 +418,7 @@ export default function MarketplacePage() {
               <p className="text-xs font-semibold text-purple-700 dark:text-purple-300">{listing?.title || 'Marketplace item'} · {new Date(message.created_at).toLocaleString()}</p>
               <p className="mt-1 whitespace-pre-wrap text-sm">{message.body}</p>
               <p className="mt-2 break-all text-[11px] text-slate-500">Buyer account: {message.sender_id}</p>
+              {listing && <button type="button" onClick={() => { setContactingItem(listing); setMessageRecipientId(message.sender_id); setCustomMsg(''); }} className="mt-2 rounded-lg bg-primary px-3 py-2 text-xs font-bold text-white">Reply to buyer</button>}
             </div>;
           })}</div>
         </section>
@@ -561,7 +565,7 @@ export default function MarketplacePage() {
               <p className="text-sm text-slate-500 dark:text-slate-300">{fullImage.category} · {fullImage.condition} · {fullImage.location || 'Campus pickup'}</p>
               <p className="whitespace-pre-wrap text-sm">{fullImage.description || 'No description provided.'}</p>
               <p className="text-xs text-slate-500">Seller: {fullImage.sellerName}</p>
-              {!fullImage.isOwner && fullImage.status === 'Available' && <button type="button" onClick={() => { setContactingItem(fullImage); setCustomMsg('Hi ' + fullImage.sellerName + '! I am interested in "' + fullImage.title + '" listed for ' + formatINR(fullImage.price) + '. Is it still available?'); setFullImage(null); }} className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 font-bold text-white hover:bg-primary-dark"><MessageSquare className="h-4 w-4" /> Contact Seller</button>}
+              {!fullImage.isOwner && fullImage.status === 'Available' && <button type="button" onClick={() => { setContactingItem(fullImage); setMessageRecipientId(fullImage.sellerId || ''); setCustomMsg('Hi ' + fullImage.sellerName + '! I am interested in "' + fullImage.title + '" listed for ' + formatINR(fullImage.price) + '. Is it still available?'); setFullImage(null); }} className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 font-bold text-white hover:bg-primary-dark"><MessageSquare className="h-4 w-4" /> Contact Seller</button>}
             </div>
           </div>
         </div>
@@ -571,7 +575,7 @@ export default function MarketplacePage() {
       <Modal
         isOpen={contactingItem !== null}
         onClose={() => setContactingItem(null)}
-        title={`Contact Seller - ${contactingItem?.sellerName}`}
+        title={`Message ${contactingItem?.isOwner ? 'Buyer' : 'Seller'} - ${contactingItem?.sellerName}`}
       >
         <form onSubmit={handleSendMessage} className="space-y-4 text-xs">
           <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
