@@ -25,9 +25,23 @@ on public.marketplace_messages for insert to authenticated
 with check (
   auth.uid() = sender_id
   and sender_id <> receiver_id
-  and exists (
-    select 1 from public.marketplace_listings l
-    where l.id = listing_id and l.seller_id = receiver_id
+  and (
+    exists (
+      select 1 from public.marketplace_listings l
+      where l.id = listing_id and l.seller_id = receiver_id
+    )
+    or (
+      exists (
+        select 1 from public.marketplace_listings l
+        where l.id = listing_id and l.seller_id = sender_id
+      )
+      and exists (
+        select 1 from public.marketplace_messages prior
+        where prior.listing_id = marketplace_messages.listing_id
+          and prior.sender_id = receiver_id
+          and prior.receiver_id = sender_id
+      )
+    )
   )
 );
 
