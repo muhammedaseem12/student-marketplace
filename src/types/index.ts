@@ -88,6 +88,7 @@ export interface MarketplaceListing {
   imageUrl: string;
   sellerName: string;
   sellerAvatar: string;
+  sellerId?: string;
   sellerContact: string;
   postedDate: string;
   location: string;
