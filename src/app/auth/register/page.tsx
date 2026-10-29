@@ -9,7 +9,6 @@ import { GraduationCap, Mail, Lock, User, BookOpen, ArrowRight } from 'lucide-re
 export default function RegisterPage() {
   const router = useRouter();
   const { register } = useApp();
-
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [major, setMajor] = useState('');
@@ -20,7 +19,6 @@ export default function RegisterPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email || !password) return;
-
     setError('');
     setSuccess('');
     const result = await register(email, password, name, major);
@@ -33,107 +31,45 @@ export default function RegisterPage() {
     router.push('/');
   };
 
+  const inputClass = "w-full rounded-xl border border-sky-200 bg-white px-4 py-3 pl-11 text-base text-slate-900 placeholder:text-slate-400 shadow-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100";
+
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-tr from-purple-900 via-slate-900 to-indigo-950 text-white">
-      <div className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 p-8 rounded-3xl shadow-2xl space-y-6">
-        <div className="text-center space-y-2">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-purple-500/30">
-            <GraduationCap className="w-8 h-8" />
-          </div>
-          <h1 className="text-2xl font-heading font-extrabold tracking-tight">
-            Create Student Account
-          </h1>
-          <p className="text-xs text-purple-200">
-            Join CampusMate and organize your academic life
-          </p>
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-[#f7fcff] via-[#eaf6ff] to-[#d9efff] px-4 py-10 text-[#10366b] sm:px-6">
+      <div aria-hidden="true" className="pointer-events-none absolute -left-24 -top-24 h-80 w-80 rounded-full bg-sky-200/60 blur-3xl" />
+      <div aria-hidden="true" className="pointer-events-none absolute -bottom-32 -right-20 h-96 w-96 rounded-full bg-blue-200/50 blur-3xl" />
+      <section className="relative w-full max-w-md rounded-[2rem] border border-white/90 bg-white/90 p-6 shadow-[0_24px_80px_rgba(30,94,153,0.14)] backdrop-blur-xl sm:p-9">
+        <div className="mb-7 text-center">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600 text-white shadow-lg shadow-blue-200"><GraduationCap className="h-9 w-9" /></div>
+          <p className="mt-5 text-xs font-extrabold uppercase tracking-[0.22em] text-blue-600">Student productivity platform</p>
+          <h1 className="mt-2 font-heading text-3xl font-extrabold tracking-tight text-[#10366b]">Create your Studora account</h1>
+          <p className="mt-2 text-sm leading-6 text-slate-600">Start organizing your academic life in one place.</p>
         </div>
 
-        {error && <div className="p-3 rounded-xl bg-red-500/20 border border-red-500/40 text-red-200 text-xs text-center">{error}</div>}
-        {success && <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-200 text-xs text-center">{success}</div>}
-        <form onSubmit={handleRegister} className="space-y-3.5 text-xs">
-          <div>
-            <label className="block font-bold text-purple-200 mb-1">
-              Full Name
-            </label>
-            <div className="relative">
-              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-300" />
-              <input
-                type="text"
-                required
-                placeholder="Alex Rivera"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 focus:border-purple-400 rounded-xl text-white placeholder-purple-300/50 focus:outline-none"
-              />
-            </div>
-          </div>
+        {error && <div role="alert" className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm leading-5 text-red-800">{error}</div>}
+        {success && <div role="status" className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-5 text-emerald-800">{success}</div>}
 
+        <form onSubmit={handleRegister} className="space-y-4">
           <div>
-            <label className="block font-bold text-purple-200 mb-1">
-              Campus Email
-            </label>
-            <div className="relative">
-              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-300" />
-              <input
-                type="email"
-                required
-                placeholder="student@campus.edu"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 focus:border-purple-400 rounded-xl text-white placeholder-purple-300/50 focus:outline-none"
-              />
-            </div>
+            <label htmlFor="register-name" className="mb-2 block text-sm font-bold text-[#173d70]">Full name</label>
+            <div className="relative"><User className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-blue-500" /><input id="register-name" autoComplete="name" type="text" required placeholder="Your full name" value={name} onChange={e=>setName(e.target.value)} className={inputClass} /></div>
           </div>
-
           <div>
-            <label className="block font-bold text-purple-200 mb-1">
-              Course / Major
-            </label>
-            <div className="relative">
-              <BookOpen className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-300" />
-              <input
-                type="text"
-                placeholder="Computer Science B.Tech"
-                value={major}
-                onChange={(e) => setMajor(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 focus:border-purple-400 rounded-xl text-white placeholder-purple-300/50 focus:outline-none"
-              />
-            </div>
+            <label htmlFor="register-email" className="mb-2 block text-sm font-bold text-[#173d70]">Email address</label>
+            <div className="relative"><Mail className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-blue-500" /><input id="register-email" autoComplete="email" type="email" required placeholder="you@college.edu" value={email} onChange={e=>setEmail(e.target.value)} className={inputClass} /></div>
           </div>
-
           <div>
-            <label className="block font-bold text-purple-200 mb-1">
-              Password
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-300" />
-              <input
-                type="password"
-                required
-                placeholder="At least 8 characters"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/20 focus:border-purple-400 rounded-xl text-white placeholder-purple-300/50 focus:outline-none"
-              />
-            </div>
+            <label htmlFor="register-major" className="mb-2 block text-sm font-bold text-[#173d70]">Course / major <span className="font-normal text-slate-400">(optional)</span></label>
+            <div className="relative"><BookOpen className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-blue-500" /><input id="register-major" type="text" placeholder="e.g. B.Tech ECE" value={major} onChange={e=>setMajor(e.target.value)} className={inputClass} /></div>
           </div>
-
-          <button
-            type="submit"
-            className="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-purple-600/30 transition-all flex items-center justify-center gap-2 mt-4"
-          >
-            <span>Create Account</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
+          <div>
+            <label htmlFor="register-password" className="mb-2 block text-sm font-bold text-[#173d70]">Password</label>
+            <div className="relative"><Lock className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-blue-500" /><input id="register-password" autoComplete="new-password" type="password" minLength={8} required placeholder="At least 8 characters" value={password} onChange={e=>setPassword(e.target.value)} className={inputClass} /></div>
+          </div>
+          <button type="submit" className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-sky-500 px-5 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-blue-200 transition hover:-translate-y-0.5 hover:from-blue-700 hover:to-sky-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Create account <ArrowRight className="h-4 w-4" /></button>
         </form>
 
-        <p className="text-center text-xs text-purple-200 pt-2">
-          Already have an account?{' '}
-          <Link href="/auth/login" className="font-bold text-white hover:underline">
-            Sign in
-          </Link>
-        </p>
-      </div>
-    </div>
+        <p className="mt-6 text-center text-sm text-slate-600">Already have an account? <Link href="/auth/login" className="font-extrabold text-blue-700 hover:text-blue-900 hover:underline">Sign in</Link></p>
+      </section>
+    </main>
   );
 }
