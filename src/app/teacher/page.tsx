@@ -30,7 +30,7 @@ export default function TeacherPortalPage() {
   }, [router]);
 
   if (!ready || !isAuthenticated || userRole !== 'teacher') {
-    return <main className="mx-auto max-w-xl p-8 text-center"><ShieldAlert className="mx-auto mb-3 h-10 w-10 text-violet-600" /><h1 className="text-xl font-bold">Checking teacher access…</h1><p className="mt-2 text-sm text-slate-500">Teacher access must be granted by an administrator.</p></main>;
+    return <main className="mx-auto max-w-xl p-8 text-center"><ShieldAlert className="mx-auto mb-3 h-10 w-10 text-sky-700" /><h1 className="text-xl font-bold">Checking teacher access…</h1><p className="mt-2 text-sm text-slate-500">Teacher access must be granted by an administrator.</p></main>;
   }
 
   const createAssignment = async (event: React.FormEvent) => {
@@ -56,25 +56,25 @@ export default function TeacherPortalPage() {
   };
 
   return <main className="mx-auto max-w-4xl space-y-6">
-    <header className="rounded-2xl bg-gradient-to-r from-violet-700 to-indigo-700 p-6 text-white">
-      <div className="flex items-center gap-3"><GraduationCap className="h-9 w-9" /><div><p className="text-sm text-violet-100">CampusMate</p><h1 className="text-2xl font-extrabold">Teacher Portal</h1></div></div>
-      <p className="mt-3 text-sm text-violet-100">Create assignments and attendance subjects for your classes.</p>
+    <header className="rounded-2xl border border-sky-200 bg-gradient-to-r from-sky-100 via-sky-200 to-blue-100 p-6 text-[#0b397f]">
+      <div className="flex items-center gap-3"><GraduationCap className="h-9 w-9" /><div><p className="text-sm text-sky-800">Studora</p><h1 className="text-2xl font-extrabold">Teacher Portal</h1></div></div>
+      <p className="mt-3 text-sm text-sky-800">Create assignments and attendance subjects for your classes.</p>
     </header>
     <section className="grid gap-5 md:grid-cols-2">
       <form onSubmit={createAssignment} className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <div className="flex items-center gap-2"><BookOpen className="h-5 w-5 text-violet-600" /><h2 className="font-bold">Create assignment</h2></div>
+        <div className="flex items-center gap-2"><BookOpen className="h-5 w-5 text-sky-700" /><h2 className="font-bold">Create assignment</h2></div>
         <label className="block text-sm font-medium">Assignment title<input required value={title} onChange={e=>setTitle(e.target.value)} className="mt-1 w-full rounded-xl border p-3 text-slate-900" /></label>
         <label className="block text-sm font-medium">Subject<input required value={subject} onChange={e=>setSubject(e.target.value)} className="mt-1 w-full rounded-xl border p-3 text-slate-900" /></label>
         <label className="block text-sm font-medium">Instructions<textarea value={description} onChange={e=>setDescription(e.target.value)} className="mt-1 w-full rounded-xl border p-3 text-slate-900" rows={3} /></label>
         <label className="block text-sm font-medium">Due date<input required type="date" value={dueDate} onChange={e=>setDueDate(e.target.value)} className="mt-1 w-full rounded-xl border p-3 text-slate-900" /></label>
-        <button disabled={busy} className="w-full rounded-xl bg-violet-600 p-3 font-bold text-white disabled:opacity-60">{busy?'Saving…':'Create assignment'}</button>
+        <button disabled={busy} className="w-full rounded-xl bg-primary p-3 font-bold text-white disabled:opacity-60">{busy?'Saving…':'Create assignment'}</button>
       </form>
       <form onSubmit={createAttendanceSubject} className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <div className="flex items-center gap-2"><ClipboardCheck className="h-5 w-5 text-violet-600" /><h2 className="font-bold">Set up attendance</h2></div>
+        <div className="flex items-center gap-2"><ClipboardCheck className="h-5 w-5 text-sky-700" /><h2 className="font-bold">Set up attendance</h2></div>
         <label className="block text-sm font-medium">Subject name<input required value={attendanceSubject} onChange={e=>setAttendanceSubject(e.target.value)} className="mt-1 w-full rounded-xl border p-3 text-slate-900" /></label>
         <label className="block text-sm font-medium">Subject code<input required value={attendanceCode} onChange={e=>setAttendanceCode(e.target.value)} className="mt-1 w-full rounded-xl border p-3 text-slate-900" /></label>
         <p className="text-xs leading-relaxed text-slate-500">Student requests and teacher approval must be stored in shared database tables before this becomes a complete attendance workflow.</p>
-        <button disabled={busy} className="w-full rounded-xl bg-violet-600 p-3 font-bold text-white disabled:opacity-60">{busy?'Saving…':'Add attendance subject'}</button>
+        <button disabled={busy} className="w-full rounded-xl bg-primary p-3 font-bold text-white disabled:opacity-60">{busy?'Saving…':'Add attendance subject'}</button>
       </form>
     </section>
   </main>;
