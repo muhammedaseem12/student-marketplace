@@ -48,15 +48,15 @@ export const Sidebar: React.FC = () => {
       <button
         type="button"
         onClick={() => router.push('/')}
-        aria-label="Go to CampusMate dashboard"
+        aria-label="Go to Studora dashboard"
         className="w-full text-left p-5 flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       >
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-700 via-purple-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-purple-500/20">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 via-blue-500 to-cyan-400 flex items-center justify-center text-white shadow-md shadow-sky-500/20">
           <GraduationCap className="w-6 h-6" />
         </div>
         <div>
           <h1 className="font-heading font-extrabold text-lg text-slate-900 dark:text-white leading-tight">
-            Campus<span className="text-primary">Mate</span>
+            Studora
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Student Portal</p>
         </div>
