@@ -18,7 +18,7 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
 
   // Authentication, registration and email callbacks must remain reachable
   // without a session. Teacher approval links also need to open from email.
-  const isPublicPage = pathname?.startsWith('/auth') || pathname?.startsWith('/teacher-approval') || pathname?.startsWith('/ieee-showcase');
+  const isPublicPage = pathname?.startsWith('/auth') || pathname?.startsWith('/teacher-approval');
 
   useEffect(() => {
     if (isPublicPage) {
