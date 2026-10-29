@@ -20,39 +20,53 @@ export const Modal: React.FC<ModalProps> = ({
   maxWidth = 'max-w-lg'
 }) => {
   useEffect(() => {
+    if (!isOpen) return;
+    const previousOverflow = document.body.style.overflow;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-      window.addEventListener('keydown', handleKeyDown);
-    }
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
     return () => {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, onClose]);
 
   if (!isOpen || typeof document === 'undefined') return null;
 
-  return createPortal((
-    <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/70 animate-fade-in">
-      <div className={`w-full ${maxWidth} h-[85vh] h-[85dvh] max-h-[85vh] max-h-[85dvh] flex flex-col bg-white dark:bg-slate-900 rounded-t-2xl sm:rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden`}>
-        <div className="flex shrink-0 items-center justify-between px-5 sm:px-6 py-4 border-b border-slate-100 dark:border-slate-800">
-          <h3 className="text-lg font-bold font-heading text-slate-900 dark:text-white">
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[9999] flex items-end justify-center sm:items-center sm:p-4"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <div className="absolute inset-0 bg-slate-900/45 animate-fade-in" aria-hidden="true" />
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="studora-modal-title"
+        className={`relative z-10 flex max-h-[85dvh] w-full min-h-0 flex-col overflow-hidden rounded-t-2xl border border-sky-100 bg-white shadow-2xl sm:rounded-2xl ${maxWidth} dark:border-slate-800 dark:bg-slate-900`}
+      >
+        <div className="flex shrink-0 items-center justify-between border-b border-sky-100 px-4 py-4 sm:px-6 dark:border-slate-800">
+          <h3 id="studora-modal-title" className="font-heading text-lg font-bold text-slate-900 dark:text-white">
             {title}
           </h3>
           <button
+            type="button"
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+            aria-label="Close dialog"
+            className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-sky-50 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white"
           >
-            <X className="w-5 h-5" />
+            <X className="h-5 w-5" />
           </button>
         </div>
-        <div className="p-5 sm:p-6 flex-1 min-h-0 overflow-y-auto overscroll-contain pb-[calc(1.25rem+env(safe-area-inset-bottom))]">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:p-6">
           {children}
         </div>
-      </div>
-    </div>
-  ), document.body);
+      </section>
+    </div>,
+    document.body
+  );
 };
