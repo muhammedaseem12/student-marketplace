@@ -75,3 +75,65 @@ body {
 [class*="border-indigo-"] {
   border-color: #b9ddfb !important;
 }
+
+/* Studora reference theme — consistent on dashboard, feature pages, menus and mobile. */
+:root {
+  color-scheme: light;
+  --studora-bg: #eef8ff;
+  --studora-surface: #f7fcff;
+  --studora-card: #e5f4ff;
+  --studora-card-strong: #d4edff;
+  --studora-border: #c8e6fa;
+  --studora-blue: #1683e8;
+  --studora-blue-dark: #0b397f;
+  --studora-muted: #5b82b2;
+}
+html, body {
+  background: var(--studora-bg) !important;
+  color: var(--studora-blue-dark);
+}
+body {
+  background-image: linear-gradient(180deg, #f7fcff 0%, #eaf7ff 100%) !important;
+}
+header.sticky {
+  background: rgba(229, 245, 255, .94) !important;
+  border-color: var(--studora-border) !important;
+}
+nav[aria-label="Mobile navigation"] {
+  background: rgba(239, 249, 255, .97) !important;
+  border-color: var(--studora-border) !important;
+}
+aside {
+  background: #f4fbff !important;
+  border-color: var(--studora-border) !important;
+}
+[class~="bg-white"], [class*="dark:bg-slate-"], [class~="bg-slate-50"] {
+  background-color: var(--studora-surface) !important;
+}
+[class~="bg-slate-100"], [class~="bg-slate-800"] {
+  background-color: #e7f4ff !important;
+}
+[class~="border-slate-100"], [class~="border-slate-200"], [class*="dark:border-slate-"] {
+  border-color: var(--studora-border) !important;
+}
+[class~="text-slate-900"], [class~="text-slate-800"], [class*="dark:text-white"], [class*="dark:text-slate-"] {
+  color: #12366f !important;
+}
+[class~="text-slate-600"], [class~="text-slate-500"], [class~="text-slate-400"] {
+  color: var(--studora-muted) !important;
+}
+[class*="text-purple-"], [class*="text-indigo-"] {
+  color: var(--studora-blue) !important;
+}
+[class*="bg-purple-"], [class*="bg-indigo-"] {
+  background-color: #dcefff !important;
+}
+[class*="border-purple-"], [class*="border-indigo-"] {
+  border-color: #b9ddfb !important;
+}
+[class*="hover:bg-slate-"]:hover, [class*="hover:bg-purple-"]:hover {
+  background-color: #e0f1ff !important;
+}
+.shadow-card, .shadow-xl, .shadow-2xl {
+  box-shadow: 0 8px 24px rgba(34, 112, 173, .07) !important;
+}
