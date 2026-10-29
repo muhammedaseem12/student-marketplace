@@ -1,10 +1,10 @@
 # 🎓 Studora — Student Productivity Platform
 
-**Created by [Muhammed Aseem](https://github.com/muhammedaseem12)** · [Presentation page](https://studora-app.vercel.app/ieee-showcase) · [Student portal](https://studora-app.vercel.app/auth/login) · [Source code](https://github.com/muhammedaseem12/student-marketplace)
+**Created by [Muhammed Aseem](https://github.com/muhammedaseem12)** · [Student portal](https://studora-app.vercel.app/auth/login) · [Source code](https://github.com/muhammedaseem12/student-marketplace)
 
-CampusMate is a student-focused web project for organizing assignments, attendance, study resources, schedules, and a campus marketplace. The live demo may change as development and deployment fixes are completed.
+Studora is a student-focused web project for organizing assignments, attendance, study resources, schedules, and a campus marketplace. The live demo may change as development and deployment fixes are completed.
 
-**CampusMate** is an all-in-one student productivity and campus management web application built with **Next.js (App Router)**, **TypeScript**, **Tailwind CSS**, and **Google Cloud Firestore**.
+**Studora** is an all-in-one student productivity and campus management web application built with **Next.js (App Router)**, **TypeScript**, **Tailwind CSS**, and **Google Cloud Firestore**.
 
 ---
 
