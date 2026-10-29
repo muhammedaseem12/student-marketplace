@@ -152,10 +152,10 @@ export default function AttendancePage() {
 
       {/* KPI Stats Overview */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-2xl p-5 shadow-lg shadow-purple-900/10">
-          <p className="text-[11px] font-bold text-purple-200 uppercase">Overall Rate</p>
+        <div className="bg-gradient-to-br from-sky-100 via-sky-200 to-blue-100 text-[#0b397f] rounded-2xl p-5 border border-sky-200 shadow-card">
+          <p className="text-[11px] font-bold text-sky-800 uppercase">Overall Rate</p>
           <p className="text-3xl font-extrabold mt-1">{overallPercentage}%</p>
-          <p className="text-xs text-purple-200 mt-1">Across all {attendances.length} courses</p>
+          <p className="text-xs text-sky-800 mt-1">Across all {attendances.length} courses</p>
         </div>
 
         <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-card">
