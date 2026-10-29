@@ -95,7 +95,7 @@ export default function LoginPage() {
           <div>
             <div className="mb-2 flex items-center justify-between gap-3">
               <label htmlFor="student-password" className="block text-sm font-bold text-[#173d70]">Password</label>
-              <Link href="/auth/forgot-password" className="text-xs font-bold text-blue-700 hover:text-blue-900 hover:underline">Forgot password?</Link>
+              <span className="text-xs text-slate-500">Need help? Contact your campus administrator.</span>
             </div>
             <div className="relative">
               <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-blue-500" aria-hidden="true" />
