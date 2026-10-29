@@ -55,7 +55,7 @@ export const WelcomeBanner: React.FC = () => {
               <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <p className="text-xl sm:text-2xl font-extrabold">{pendingAssignments.length}</p>
-            <p className="text-[10px] sm:text-xs text-purple-200 font-medium">Pending Work</p>
+            <p className="text-[10px] sm:text-xs text-sky-800 font-medium">Pending Work</p>
           </div>
 
           <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-xl p-3 sm:p-4 text-center">
@@ -70,7 +70,7 @@ export const WelcomeBanner: React.FC = () => {
             <div className="flex items-center justify-center text-amber-300 mb-1">
               <Award className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <p className="text-xl sm:text-2xl font-extrabold">{profile.gpa.split(' ')[0]}</p>
+            <p className="text-xl sm:text-2xl font-extrabold">{profile.gpa?.trim() ? profile.gpa.split(' ')[0] : '—'}</p>
             <p className="text-[10px] sm:text-xs text-purple-200 font-medium">Current GPA</p>
           </div>
         </div>
