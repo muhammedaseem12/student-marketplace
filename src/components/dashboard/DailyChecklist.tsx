@@ -19,11 +19,11 @@ export const DailyChecklist: React.FC = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-card">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <CheckSquare className="w-5 h-5 text-emerald-500" />
-          <h3 className="font-heading font-bold text-base text-slate-900 dark:text-white">
+    <section className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-card sm:p-5 dark:border-slate-800 dark:bg-slate-900" aria-labelledby="daily-checklist-title">
+      <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-w-0 items-center gap-2">
+          <CheckSquare className="h-5 w-5 shrink-0 text-emerald-500" />
+          <h3 id="daily-checklist-title" className="font-heading text-base font-bold text-slate-900 dark:text-white">
             Daily Task Checklist
           </h3>
         </div>
@@ -32,65 +32,67 @@ export const DailyChecklist: React.FC = () => {
         </span>
       </div>
 
-      {/* Progress bar */}
-      <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 mb-4 overflow-hidden">
+      <div className="mb-4 h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800" role="progressbar" aria-label="Daily tasks completed" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percentage}>
         <div
-          className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-300"
+          className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-300"
           style={{ width: `${percentage}%` }}
         />
       </div>
 
-      {/* Task list */}
-      <div className="space-y-2 mb-4 max-h-56 overflow-y-auto pr-1">
+      <div className="mb-4 space-y-2 pr-0 sm:max-h-56 sm:overflow-y-auto sm:pr-1">
         {dailyTasks.map((task) => (
           <div
             key={task.id}
-            className={`flex items-center justify-between p-2.5 rounded-xl border transition-colors ${
+            className={`flex min-w-0 items-start justify-between gap-2 rounded-xl border p-3 transition-colors ${
               task.completed
-                ? 'bg-slate-50 dark:bg-slate-800/40 border-slate-100 dark:border-slate-800/60 text-slate-400 line-through'
-                : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200'
-            }`}
+                ? 'bg-slate-50 text-slate-400 line-through dark:bg-slate-800/40'
+                : 'bg-white text-slate-800 dark:bg-slate-900 dark:text-slate-200'
+            } border-slate-200 dark:border-slate-800`}
           >
-            <div
+            <button
+              type="button"
               onClick={() => toggleDailyTask(task.id)}
-              className="flex items-center gap-3 cursor-pointer flex-1"
+              aria-pressed={task.completed}
+              className="flex min-w-0 flex-1 items-start gap-3 text-left"
             >
               {task.completed ? (
-                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
               ) : (
-                <Circle className="w-4 h-4 text-slate-400 shrink-0" />
+                <Circle className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
               )}
-              <span className="text-xs font-medium">{task.title}</span>
-            </div>
+              <span className="min-w-0 break-words text-sm font-medium leading-5 [overflow-wrap:anywhere]">{task.title}</span>
+            </button>
 
             <button
+              type="button"
               onClick={() => deleteDailyTask(task.id)}
-              className="text-slate-400 hover:text-red-500 p-1 transition-colors"
+              className="shrink-0 rounded-lg p-2 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30"
               title="Delete task"
+              aria-label={`Delete task: ${task.title}`}
             >
-              <Trash2 className="w-3.5 h-3.5" />
+              <Trash2 className="h-4 w-4" />
             </button>
           </div>
         ))}
       </div>
 
-      {/* Inline add task input */}
-      <form onSubmit={handleAdd} className="flex gap-2">
+      <form onSubmit={handleAdd} className="flex min-w-0 gap-2">
         <input
           type="text"
           placeholder="Add a new quick task..."
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
-          className="flex-1 px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20"
+          className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+          aria-label="New task title"
         />
         <button
           type="submit"
-          className="px-3 py-1.5 bg-slate-900 dark:bg-slate-800 hover:bg-primary text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1"
+          className="flex shrink-0 items-center gap-1 rounded-xl bg-blue-600 px-3 py-2 text-sm font-bold text-white transition-colors hover:bg-blue-700"
         >
-          <Plus className="w-3.5 h-3.5" />
+          <Plus className="h-4 w-4" />
           <span>Add</span>
         </button>
       </form>
-    </div>
+    </section>
   );
 };
