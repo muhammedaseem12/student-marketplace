@@ -4,8 +4,8 @@ import { AppProvider } from '@/context/AppContext';
 import LayoutShell from '@/components/layout/LayoutShell';
 
 export const metadata: Metadata = {
-  title: 'CampusMate - Student Productivity Portal',
-  description: 'Your entire college life, organized in one place. Assignments, timetables, study materials, student marketplace & schedule management.',
+  title: 'Studora | Student Productivity Portal',
+  description: 'Studora helps students organize assignments, timetables, attendance, study materials, and campus life in one place.',
 };
 
 export default function RootLayout({
