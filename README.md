@@ -1,6 +1,6 @@
-# 🎓 CampusMate — Student Productivity & Campus Portal
+# 🎓 Studora — Student Productivity Platform
 
-**Created by [Muhammed Aseem](https://github.com/muhammedaseem12)** · [Live Demo](https://studora-app.vercel.app) · [Source Code](https://github.com/muhammedaseem12/student-marketplace)
+**Created by [Muhammed Aseem](https://github.com/muhammedaseem12)** · [Presentation page](https://studora-app.vercel.app/ieee-showcase) · [Student portal](https://studora-app.vercel.app/auth/login) · [Source code](https://github.com/muhammedaseem12/student-marketplace)
 
 CampusMate is a student-focused web project for organizing assignments, attendance, study resources, schedules, and a campus marketplace. The live demo may change as development and deployment fixes are completed.
 
