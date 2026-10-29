@@ -54,7 +54,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenQuickAdd }) => {
     if (pathname.startsWith('/notifications')) return 'Notification Center';
     if (pathname.startsWith('/profile')) return 'Profile & Settings';
     if (pathname.startsWith('/auth')) return 'Authentication';
-    return 'CampusMate';
+    return 'Studora';
   };
 
   return (
