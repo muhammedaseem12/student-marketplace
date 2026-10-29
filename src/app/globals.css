@@ -2,32 +2,55 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Studora design tokens: one light-blue system across desktop and mobile. */
+:root {
+  color-scheme: light;
+  --studora-bg: #eef8ff;
+  --studora-surface: #f8fcff;
+  --studora-card: #e5f4ff;
+  --studora-card-strong: #d4edff;
+  --studora-border: #c8e6fa;
+  --studora-blue: #1683e8;
+  --studora-blue-dark: #0b397f;
+  --studora-muted: #567ba8;
+}
+
 @layer base {
+  html {
+    background: var(--studora-bg);
+    color-scheme: light;
+  }
+
   body {
-    @apply bg-background text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased font-sans transition-colors duration-200;
+    @apply antialiased font-sans;
+    min-height: 100%;
+    color: var(--studora-blue-dark);
+    background: linear-gradient(180deg, #f7fcff 0%, var(--studora-bg) 100%);
+  }
+
+  button, input, textarea, select {
+    font: inherit;
+  }
+
+  :focus-visible {
+    outline: 3px solid #1683e8;
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    color: #0b397f;
+    background: #c7e7ff;
   }
 }
 
 @keyframes slideUp {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .animate-slide-up {
@@ -38,34 +61,23 @@
   animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Studora light-blue theme: keep every page light, including saved dark-mode states. */
-:root {
-  color-scheme: light;
+/* Keep legacy dark-mode utility classes from reintroducing black surfaces. */
+[class*="dark:bg-"] {
+  background-color: var(--studora-surface) !important;
+  background-image: none;
 }
-html,
-body {
-  background: #eef8ff !important;
-  color: #123765;
-}
-body {
-  background-image: linear-gradient(180deg, #f8fcff 0%, #eaf6ff 100%) !important;
-}
-[class*="dark:bg-"],
-[class~="bg-slate-950"],
-[class~="bg-slate-900"],
-[class~="bg-slate-800"] {
-  background-color: #f2f9ff !important;
-  background-image: none !important;
-}
-[class*="dark:text-"] {
-  color: #173c6d !important;
+[class*="dark:text-white"],
+[class*="dark:text-slate-"] {
+  color: var(--studora-blue-dark) !important;
 }
 [class*="dark:border-"] {
-  border-color: #c9e5fa !important;
+  border-color: var(--studora-border) !important;
 }
+
+/* Replace legacy purple/indigo utility colors with the reference blue palette. */
 [class*="text-purple-"],
 [class*="text-indigo-"] {
-  color: #1683e8 !important;
+  color: var(--studora-blue) !important;
 }
 [class*="bg-purple-"],
 [class*="bg-indigo-"] {
@@ -75,65 +87,71 @@ body {
 [class*="border-indigo-"] {
   border-color: #b9ddfb !important;
 }
+[class*="from-purple-"],
+[class*="from-indigo-"] {
+  --tw-gradient-from: #dcefff var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgb(220 239 255 / 0) var(--tw-gradient-to-position) !important;
+}
+[class*="via-purple-"],
+[class*="via-indigo-"] {
+  --tw-gradient-via: #c8e8ff var(--tw-gradient-via-position) !important;
+}
+[class*="to-purple-"],
+[class*="to-indigo-"] {
+  --tw-gradient-to: #b9ddfb var(--tw-gradient-to-position) !important;
+}
 
-/* Studora reference theme — consistent on dashboard, feature pages, menus and mobile. */
-:root {
-  color-scheme: light;
-  --studora-bg: #eef8ff;
-  --studora-surface: #f7fcff;
-  --studora-card: #e5f4ff;
-  --studora-card-strong: #d4edff;
-  --studora-border: #c8e6fa;
-  --studora-blue: #1683e8;
-  --studora-blue-dark: #0b397f;
-  --studora-muted: #5b82b2;
-}
-html, body {
-  background: var(--studora-bg) !important;
-  color: var(--studora-blue-dark);
-}
-body {
-  background-image: linear-gradient(180deg, #f7fcff 0%, #eaf7ff 100%) !important;
-}
+/* Shared surfaces and navigation. */
 header.sticky {
-  background: rgba(229, 245, 255, .94) !important;
+  background: rgba(239, 249, 255, 0.96) !important;
   border-color: var(--studora-border) !important;
 }
 nav[aria-label="Mobile navigation"] {
-  background: rgba(239, 249, 255, .97) !important;
+  background: rgba(247, 252, 255, 0.98) !important;
   border-color: var(--studora-border) !important;
 }
 aside {
   background: #f4fbff !important;
   border-color: var(--studora-border) !important;
 }
-[class~="bg-white"], [class*="dark:bg-slate-"], [class~="bg-slate-50"] {
+[class~="bg-white"],
+[class~="bg-slate-50"],
+[class~="bg-slate-900"],
+[class~="bg-slate-950"] {
   background-color: var(--studora-surface) !important;
 }
-[class~="bg-slate-100"], [class~="bg-slate-800"] {
+[class~="bg-slate-100"],
+[class~="bg-slate-800"] {
   background-color: #e7f4ff !important;
 }
-[class~="border-slate-100"], [class~="border-slate-200"], [class*="dark:border-slate-"] {
+[class~="border-slate-100"],
+[class~="border-slate-200"] {
   border-color: var(--studora-border) !important;
 }
-[class~="text-slate-900"], [class~="text-slate-800"], [class*="dark:text-white"], [class*="dark:text-slate-"] {
-  color: #12366f !important;
+[class~="text-slate-900"],
+[class~="text-slate-800"] {
+  color: var(--studora-blue-dark) !important;
 }
-[class~="text-slate-600"], [class~="text-slate-500"], [class~="text-slate-400"] {
+[class~="text-slate-600"],
+[class~="text-slate-500"],
+[class~="text-slate-400"] {
   color: var(--studora-muted) !important;
 }
-[class*="text-purple-"], [class*="text-indigo-"] {
-  color: var(--studora-blue) !important;
-}
-[class*="bg-purple-"], [class*="bg-indigo-"] {
-  background-color: #dcefff !important;
-}
-[class*="border-purple-"], [class*="border-indigo-"] {
-  border-color: #b9ddfb !important;
-}
-[class*="hover:bg-slate-"]:hover, [class*="hover:bg-purple-"]:hover {
+[class*="hover:bg-slate-"]:hover,
+[class*="hover:bg-purple-"]:hover {
   background-color: #e0f1ff !important;
 }
-.shadow-card, .shadow-xl, .shadow-2xl {
-  box-shadow: 0 8px 24px rgba(34, 112, 173, .07) !important;
+.shadow-card,
+.shadow-xl,
+.shadow-2xl {
+  box-shadow: 0 8px 24px rgba(34, 112, 173, 0.07) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
