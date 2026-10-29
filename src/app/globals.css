@@ -37,3 +37,41 @@
 .animate-fade-in {
   animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* Studora light-blue theme: keep every page light, including saved dark-mode states. */
+:root {
+  color-scheme: light;
+}
+html,
+body {
+  background: #eef8ff !important;
+  color: #123765;
+}
+body {
+  background-image: linear-gradient(180deg, #f8fcff 0%, #eaf6ff 100%) !important;
+}
+[class*="dark:bg-"],
+[class~="bg-slate-950"],
+[class~="bg-slate-900"],
+[class~="bg-slate-800"] {
+  background-color: #f2f9ff !important;
+  background-image: none !important;
+}
+[class*="dark:text-"] {
+  color: #173c6d !important;
+}
+[class*="dark:border-"] {
+  border-color: #c9e5fa !important;
+}
+[class*="text-purple-"],
+[class*="text-indigo-"] {
+  color: #1683e8 !important;
+}
+[class*="bg-purple-"],
+[class*="bg-indigo-"] {
+  background-color: #dcefff !important;
+}
+[class*="border-purple-"],
+[class*="border-indigo-"] {
+  border-color: #b9ddfb !important;
+}
